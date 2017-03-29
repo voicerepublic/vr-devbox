@@ -40,16 +40,20 @@ if [ ! -f ~vagrant/.ssh/id_rsa ]; then
     echo '=== IMPORT THIS KEY TO GITHUB ==='
     echo
     echo 'https://github.com/settings/keys'
-    echo "\n\n"
+    echo
+    echo
     ssh-keygen -y -f ~vagrant/.ssh/id_rsa
     echo
 fi
 
 # copy prepared files
-cp -r /vagrant/home/* ~
+rsync -vr /vagrant/home/ /home/vagrant
 
 # make sure everything is owned by user vagrant
 chown -R vagrant: ~vagrant
+
+# run vr specific setup
+#su -c voicerepublic_setup.sh vagrant
 
 # after provisioning reboot is often a good idea ;)
 reboot
