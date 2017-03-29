@@ -1,0 +1,8 @@
+[roxterm profile]
+colour_scheme=Tango
+hide_menubar=1
+show_resize_grip=0
+always_show_tabs=0
+show_add_tab_btn=0
+scrollbar_pos=0
+scroll_on_keystroke=1
