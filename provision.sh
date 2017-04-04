@@ -5,7 +5,7 @@ echo 'deb http://ftp.debian.org/debian jessie-backports main' > \
 
 apt-get update
 
-apt-get install -y zsh i3 xinit roxterm git
+apt-get install -y zsh i3 xinit roxterm git wget build-essential
 
 # auto login
 mkdir -p /etc/systemd/system/getty@tty1.service.d/
@@ -24,36 +24,35 @@ autoload -Uz compinit promptinit
 compinit
 promptinit
 export PROMPT='%~ %? %B%#%b '
+export PATH=~/bin:$PATH
 EOF
 
 # auto start x
 echo '[ "$(tty)" = "/dev/tty1" ] && exec startx' >> ~vagrant/.zprofile
 
-# setup vr
-mkdir -p ~vagrant/src
-ln -s /vagrant ~vagrant/src/vr
-
 # generate key
 if [ ! -f ~vagrant/.ssh/id_rsa ]; then
     su -c 'ssh-keygen -b 2048 -t rsa -f .ssh/id_rsa -N ""'
-    echo
-    echo '=== IMPORT THIS KEY TO GITHUB ==='
-    echo
-    echo 'https://github.com/settings/keys'
-    echo
-    echo
+    echo '>'
+    echo '> === IMPORT THIS KEY TO GITHUB ==='
+    echo '>'
+    echo '> https://github.com/settings/keys'
+    echo '>'
+    echo '>'
     ssh-keygen -y -f ~vagrant/.ssh/id_rsa
-    echo
+    echo '>'
 fi
 
-# copy prepared files
+# copy prepared files to ~vagrant
 rsync -vr /vagrant/home/ /home/vagrant
+
+chmod a+x /home/vagrant/bin/*
 
 # make sure everything is owned by user vagrant
 chown -R vagrant: ~vagrant
 
-# run vr specific setup
-#su -c voicerepublic_setup.sh vagrant
-
-# after provisioning reboot is often a good idea ;)
-reboot
+# after provisioning the first time reboot
+if [ ! -f ~vagrant/.provisioned ]; then
+    date > ~vagrant/.provisioned
+    reboot
+fi

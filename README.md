@@ -1,5 +1,5 @@
-Wellcome to VR Devbox
-=====================
+Welcome to Devbox
+=================
 
 Install virtualbox & vagrant.
 
@@ -7,10 +7,7 @@ Run
 
 `vagrant up`
 
-Details
--------
-
-
+Inside the running terminal of the devbox run `setup-vr.sh`.
 
 
 Development
@@ -21,3 +18,16 @@ Update the image
 ```
 git pull && vagrant provision
 ```
+
+If you just want to update the prepared files
+
+```
+rsync -avz -e "ssh -p 2222" home/ vagrant@localhost:
+```
+
+
+TODO
+----
+
+* enable shared clipboard by default
+* add an optical drive & install virtualbox guest additions
