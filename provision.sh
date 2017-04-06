@@ -54,5 +54,5 @@ chown -R vagrant: ~vagrant
 # after provisioning the first time reboot
 if [ ! -f ~vagrant/.provisioned ]; then
     date > ~vagrant/.provisioned
-    reboot
+    (sleep 5; reboot) &
 fi

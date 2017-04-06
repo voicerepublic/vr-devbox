@@ -29,5 +29,6 @@ rsync -avz -e "ssh -p 2222" home/ vagrant@localhost:
 TODO
 ----
 
-* enable shared clipboard by default
-* add an optical drive & install virtualbox guest additions
+[x] enable shared clipboard by default
+[x] add an optical drive & install virtualbox guest additions
+    -> this can be easily done with https://github.com/dotless-de/vagrant-vbguest

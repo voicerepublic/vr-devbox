@@ -96,13 +96,8 @@ Vagrant.configure(2) do |config|
   end
 
   # copy gitconfig
-  config.vm.provision 'shell' do |s|
-    path = "#{Dir.home}/.gitconfig"
-    content = File.read(path)
-    s.inline = "cat > /home/vagrant/.gitconfig <<EOF\n#{content}\nEOF"
-  end
+  config.vm.provision 'file', source: '~/.gitconfig', destination: '/home/vagrant/.gitconfig'
 
   # run provision script
   config.vm.provision 'shell', path: 'provision.sh'
-
 end
