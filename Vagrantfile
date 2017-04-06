@@ -63,6 +63,7 @@ Vagrant.configure(2) do |config|
     # Utilize 100% of real CPU for the configured Cores
     # Note: This is probably the default
     vb.customize ['modifyvm', :id, '--cpuexecutioncap', '100']
+    vb.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
 
     vb.cpus = 4
   end
@@ -101,9 +102,7 @@ Vagrant.configure(2) do |config|
     s.inline = "cat > /home/vagrant/.gitconfig <<EOF\n#{content}\nEOF"
   end
 
-  # copy provision script
-  config.vm.provision 'file', source: 'provision.sh', destination: 'provision.sh'
   # run provision script
-  config.vm.provision 'shell', inline: 'sudo bash provision.sh'
+  config.vm.provision 'shell', path: 'provision.sh'
 
 end
