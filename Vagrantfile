@@ -32,7 +32,7 @@ Vagrant.configure(2) do |config|
   #config.ssh.insert_key = 'true'
   config.ssh.insert_key = false
 
-  # config.ssh.private_key_path = '~/.ssh/id_rsa'
+  config.ssh.private_key_path =  ["~/.vagrant.d/insecure_private_key","~/.ssh/id_rsa"]
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -86,13 +86,25 @@ Vagrant.configure(2) do |config|
   #       If you want to run it later, use `vagrant provision`
 
   # copy key
-  config.vm.provision 'shell' do |s|
-    ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
-    s.inline = <<-SHELL
-      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
-      sudo mkdir -p /root/.ssh
-      sudo echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
-    SHELL
+  config.vm.provision 'shell', privileged: false do |s|
+    unless File.file?("#{Dir.home}/.ssh/id_rsa")
+      puts "No SSH key found. You will need to remedy this before pushing to the repository."
+    else
+      ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+      insecure_pub_key = %x(ssh-keygen -y -f ~/.vagrant.d/insecure_private_key)
+      s.inline = <<-SHELL
+        if grep -sq "#{insecure_pub_key}" /home/$USER/.ssh/authorized_keys; then
+          echo "" > /home/$USER/.ssh/authorized_keys
+        fi
+        if grep -sq "#{ssh_pub_key}" /home/$USER/.ssh/authorized_keys; then
+          echo "SSH keys already provisioned."
+          exit 0;
+        fi
+        echo #{ssh_pub_key} >> /home/$USER/.ssh/authorized_keys
+        sudo mkdir -p /root/.ssh
+        sudo bash -c "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
+      SHELL
+    end
   end
 
   # copy gitconfig

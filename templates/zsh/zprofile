@@ -1,0 +1,6 @@
+autoload -Uz compinit promptinit
+compinit
+promptinit
+export PROMPT='%~ %? %B%#%b '
+export PATH=~/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[ "$(tty)" = "/dev/tty1" ] && exec startx

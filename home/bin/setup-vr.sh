@@ -2,6 +2,8 @@
 
 set -x
 
+./check-github-access.sh || exit 1
+
 ./install-docker.sh
 ./install-java8.sh
 ./install-leinigen.sh
@@ -37,6 +39,6 @@ cp src/dev/config/database.yml.sample src/dev/config/database.yml
 cp src/dev/config/settings.local.yml.sample src/dev/config/settings.local.yml
 
 (cd ~/src/dev && \
-	bundle && \
+    bundle && \
         rake db:create && \
         rake db:migrate)
