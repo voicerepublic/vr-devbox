@@ -1,47 +1,42 @@
-# clone the main vr repo
-git clone git@github.com:munen/voicerepublic_dev.git
+#!/bin/bash
+
+set -x
+
+./install-docker.sh
+./install-java8.sh
+./install-leinigen.sh
+
+sudo apt-get install -y postgresql-client-9.4 nmap build-essential
+
+# setup db
+docker run --name vr-postgres -p 5432:5432 -d postgres
+
+# setup rmq
+docker run -d --name vr-rabbitmq -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 25672:25672 rabbitmq:3.6.6-management
+
+
+
 
 # install rbenv
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-# add to your path...
-# for bash:
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-# for zsh:
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-~/.rbenv/bin/rbenv init
-
-# install ruby-build
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-# install debian packages:
-sudo apt-get install postgresql-contrib libpcre++-dev libav-tools sox vorbis-tools libreadline-dev libpq-dev
-
-# install bundler
+~/.rbenv/bin/rbenv init
+rbenv install 2.1.2
+rbenv global 2.1.2
 gem install bundler
 
-# install capistrano
-gem install capistrano
 
-#  run bundle
-bundle
 
-# install docker
-# from: https://github.com/munen/voicerepublic_dev/blob/integration/lib/icecast/README.md
-sudo apt-get -y install apt-transport-https ca-certificates
-sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-# this throws errors, I had to actually manually create the file and paste the line:
-echo 'deb https://apt.dockerproject.org/repo debian-jessie main' > /etc/apt/sources.list.d/docker.list
-sudo apt-get update
-sudo apt-get -y install docker-engine psmisc
 
-# user might need to belong to the docker group
-sudo usermod -aG docker vagrant
-# then reboot
-reboot
+mkdir -p ~/src
 
-# start docker db
-docker run --name vr-postgres -p 5432:5432 -d postgres
-psql -h localhost -U postgres
-# password: 
-CREATE DATABASE vr_dev;                                                                                                                                                                                                                            
-CREATE DATABASE vr_test;
+git clone git@github.com:munen/voicerepublic_dev.git ~/src/dev
+
+cp src/dev/config/database.yml.sample src/dev/config/database.yml
+cp src/dev/config/settings.local.yml.sample src/dev/config/settings.local.yml
+
+(cd ~/src/dev && \
+	bundle && \
+        rake db:create && \
+        rake db:migrate)
