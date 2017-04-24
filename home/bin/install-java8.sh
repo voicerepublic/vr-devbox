@@ -1,16 +1,19 @@
 #!/bin/bash
 
-# FIXME this is not idempotent!
-sudo sed -i 's/main/main contrib non-free/' /etc/apt/sources.list
 
-sudo apt-get update
+if ! dpkg -s oracle-java8-set-default > /dev/null 2>&1
+then
 
-sudo apt-get install -y java-package
+    sudo cp /vagrant/templates/apt/sources.list.d/java.list /etc/apt/sources.list.d/java.list
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 
-wget --no-check-certificate -c \
-     --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-     http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-x64.tar.gzhttp://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz
+    sudo apt-get update
 
-make-jpkg jdk-8u112-linux-x64.tar.gz
+    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+    echo oracle-java8-installer shared/accepted-oracle-licence-v1-1 boolean true | sudo /usr/bin/debconf-set-selections
 
-sudo dpkg -i oracle-java8-jdk_8u121_amd64.deb
+    echo oracle-java8-set-default shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+    echo oracle-java8-set-default shared/accepted-oracle-licence-v1-1 boolean true | sudo /usr/bin/debconf-set-selections
+
+    sudo apt-get -y install oracle-java8-set-default
+fi

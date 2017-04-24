@@ -2,41 +2,42 @@
 
 set -x
 
-./check-github-access.sh || exit 1
+DIR="$(cd "$(dirname "$0")" && pwd)"
 
-./install-docker.sh
-./install-java8.sh
-./install-leinigen.sh
 
-sudo apt-get install -y postgresql-client-9.4 nmap build-essential
+$DIR/check-github-access.sh || exit 1
+
+$DIR/install-docker.sh
+$DIR/install-java8.sh
+$DIR/install-leinigen.sh
+
+sudo apt-get install -y postgresql-client-9.4 libpq-dev nmap build-essential
+
+$DIR/install-ruby-rbenv.sh
+$DIR/install-node.sh
+
+if ! (groups | grep -q docker)
+then
+    echo "We are not part of the docker group yet, doing a reboot. Please run this script again after the reboot."
+    echo "This might also be a good time to create a new snapshot!"
+    echo "You can do this by running 'vagrant snapshot save YOURNAME'"
+    sleep 10
+    sudo reboot
+fi
 
 # setup db
-docker run --name vr-postgres -p 5432:5432 -d postgres
+docker run -d --name vr-postgres -p 5432:5432 postgres
 
 # setup rmq
 docker run -d --name vr-rabbitmq -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 25672:25672 rabbitmq:3.6.6-management
-
-
-
-
-# install rbenv
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-~/.rbenv/bin/rbenv init
-rbenv install 2.1.2
-rbenv global 2.1.2
-gem install bundler
-
-
-
 
 mkdir -p ~/src
 
 git clone git@github.com:munen/voicerepublic_dev.git ~/src/dev
 
-cp src/dev/config/database.yml.sample src/dev/config/database.yml
-cp src/dev/config/settings.local.yml.sample src/dev/config/settings.local.yml
+sed -e "s/your_username/app/" ~/src/dev/config/database.yml.example > ~/src/dev/config/database.yml
+
+$DIR/update-ip-settings-local.sh
 
 (cd ~/src/dev && \
     bundle && \

@@ -4,7 +4,7 @@ function error {
   echo -e "\033[31mERROR: $1\033[0m"
 }
 
-ssh -T git@github.com
+ssh -oStrictHostKeyChecking=no -T git@github.com
 status=$?
 
 if [ $status -eq 255 ]; then

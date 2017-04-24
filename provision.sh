@@ -15,7 +15,6 @@ cp /vagrant/templates/systemd/override.conf /etc/systemd/system/getty@tty1.servi
 # zsh
 chsh -s /usr/bin/zsh vagrant
 
-# TODO move to file
 cp -f /vagrant/templates/zsh/zprofile ~vagrant/.zprofile
 
 # generate key
@@ -31,7 +30,7 @@ if [ ! -f ~vagrant/.ssh/id_rsa ]; then
     echo '>'
 fi
 
-# copy prepared files to ~vagrant
+# link prepared files to ~vagrant
 rsync -vr /vagrant/home/ /home/vagrant
 
 chmod a+x /home/vagrant/bin/*
