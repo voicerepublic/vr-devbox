@@ -15,6 +15,7 @@ sudo apt-get install -y postgresql-client-9.4 libpq-dev nmap build-essential
 
 $DIR/install-ruby-rbenv.sh
 $DIR/install-node.sh
+$DIR/install-multimedia.sh
 
 if ! (groups | grep -q docker)
 then
@@ -26,7 +27,7 @@ then
 fi
 
 # setup db
-docker run -d --name vr-postgres -p 5432:5432 postgres
+docker run -d --name vr-postgres -p 5432:5432 -e POSTGRES_USER=app postgres
 
 # setup rmq
 docker run -d --name vr-rabbitmq -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 25672:25672 rabbitmq:3.6.6-management

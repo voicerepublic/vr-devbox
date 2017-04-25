@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! command -v lein >/dev/null 2>&1
+if ! (command -v lein >/dev/null 2>&1)
 then
     url=https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
 
