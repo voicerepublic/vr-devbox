@@ -43,4 +43,5 @@ $DIR/update-ip-settings-local.sh
 (cd ~/src/dev && \
     bundle && \
         rake db:create && \
-        rake db:migrate)
+        rake db:migrate && \
+        docker build -t branch14/icecast2 lib/icecast)
