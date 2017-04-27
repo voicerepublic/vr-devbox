@@ -27,10 +27,10 @@ then
 fi
 
 # setup db
-docker run -d --name vr-postgres -p 5432:5432 -e POSTGRES_USER=app postgres
+docker run -d --restart=always --name vr-postgres -p 5432:5432 -e POSTGRES_USER=app postgres
 
 # setup rmq
-docker run -d --name vr-rabbitmq -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 25672:25672 rabbitmq:3.6.6-management
+docker run -d --restart=always --name vr-rabbitmq -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 25672:25672 rabbitmq:3.6.6-management
 
 mkdir -p ~/src
 
