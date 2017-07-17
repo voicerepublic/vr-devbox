@@ -19,6 +19,12 @@ Update the image
 git pull && vagrant provision
 ```
 
+In case this fails just run 
+
+`vagrant up`
+ 
+once more.
+
 If you just want to update the prepared files
 
 ```
